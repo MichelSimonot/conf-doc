@@ -1,0 +1,23 @@
+{
+  "name": "conf-doc",
+  "version": "0.1.0",
+  "description": "",
+  "main": "parser.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MichelSimonot/conf-doc.git"
+  },
+  "author": "MichelSimonot",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MichelSimonot/conf-doc/issues"
+  },
+  "homepage": "https://github.com/MichelSimonot/conf-doc#readme",
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "read-file-relative": "^1.2.0"
+  }
+}
