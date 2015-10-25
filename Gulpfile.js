@@ -1,13 +1,15 @@
 'use strict';
 var gulp = require('gulp');
-var readSync = require('read-file-relative').readSync;
+var confDoc = require('./conf-doc.js');
 
-var parser = require('./parser.js');
-var data = readSync('/testfile.js');
+var files = [
+    '/testfile.js',
+    '/otherfile.js'
+];
 
 gulp.task('run', function() {
 
-    var autodoc = parser.parse(data);
+    var autodoc = confDoc.parse(files);
     console.log(JSON.stringify(autodoc));
 
 });

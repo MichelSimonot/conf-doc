@@ -1,4 +1,10 @@
 /**
+ * This module is for testing purposes only.
+ *
+ * @module testFile
+ */
+
+/**
  * This is a test file with random stuff in it.
  *
  * @method doStuff
