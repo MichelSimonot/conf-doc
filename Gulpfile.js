@@ -3,8 +3,9 @@ var gulp = require('gulp');
 var confDoc = require('./conf-doc.js');
 
 var files = [
-    '/testfile.js',
-    '/otherfile.js'
+    'test/testfile.js',
+    'test/testfile2.js',
+    'test/otherfile.js'
 ];
 
 gulp.task('run', function() {
