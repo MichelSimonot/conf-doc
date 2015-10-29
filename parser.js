@@ -1,4 +1,6 @@
 'use strict';
+var TAG_LIST = require('./configurations/default/definedTags.js');
+
 var parser = (function() {
     var exports = {};
 
@@ -14,11 +16,11 @@ var parser = (function() {
 
     /**
      * Parses a file from a String into a documentation object.
-     * @method parse
+     * @method parseFile
      * @param  {String} file File to be parsed.
      * @return {Object} Parsed documentation object.
      */
-    exports.parse = function(file) {
+    exports.parseFile = function(file) {
 
         /**
          * Container object for all resulting file documentation objects.
@@ -40,6 +42,9 @@ var parser = (function() {
             switch(block.itemType) {
                 case 'function':
                     everything.functions.push(block);
+                    break;
+                case 'module':
+                    everything.name = block.name;
                     break;
             };
         });
@@ -188,6 +193,10 @@ var parser = (function() {
                         desc: item.desc
                     };
                     break;
+                case 'module':
+                    obj.itemType = item.tagType;
+                    obj.name = item.name;
+                    break;
             }
         }
         return obj;
@@ -196,40 +205,5 @@ var parser = (function() {
     //TODO: Export everything for overrideability (?).
     return exports;
 })();
-
-
-//TODO: Remove hardcoded numbers.
-/**
- * List of defined tag types, and their parsing functions. TODO.
- * @name TAG_LIST
- * @type {Object}
- */
-var TAG_LIST = {
-    'method': function(components) {
-        return {
-            tagType: 'function',
-            name: components[2]
-        };
-    },
-    'param': function(components, tagType) {
-        var varType = components[2].substring(1, components[2].length - 1);
-        var varDesc = components.splice(4).join(" ");
-        return {
-            tagType: 'param',
-            type: varType,
-            name: components[3],
-            desc: varDesc
-        };
-    },
-    'returns': function(components) {
-        // TODO: turn the complicated/common ones into separate functions.
-        return {
-            tagType: 'return',
-            type: components[2].substring(1, components[2].length - 1),
-            name: components[3],
-            desc: components.splice(4).join(" ")
-        };
-    }
-}
 
 module.exports = parser;
