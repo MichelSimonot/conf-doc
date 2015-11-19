@@ -23,27 +23,33 @@ var confDoc = (function() {
             var data = readSync(file);
             var moduleDoc = parser.parseFile(data);
 
+            // If there was no module tag block, fix it.
             if(typeof moduleDoc.name === 'undefined') {
-                moduleDoc.name = path.basename(file);
+                var newDoc = {
+                    name: path.basename(file),
+                    type: 'module'
+                };
+
+                for(var key in moduleDoc) {
+                    if(key !== 'undefined') {
+                        newDoc[key] = moduleDoc[key];
+                    }
+                }
+                moduleDoc = newDoc;
             }
 
             // TODO: Make this a stand-alone utility function.
             if(typeof everything.modules[moduleDoc.name] !== 'undefined') {
 
-
                 // Merge extra functions into first functions.
-                moduleDoc.functions.forEach(function(func) {
+                moduleDoc.function.forEach(function(func) {
                     // TODO: Check for duplicate function names (?).
-                    everything.modules[moduleDoc.name].functions.push(func);
+                    everything.modules[moduleDoc.name].function.push(func);
                 });
 
-                // Merge extra properties into first functions.
-                moduleDoc.properties.forEach(function(property) {
-                    // TODO: Check for duplicate property names (?).
-                    everything.modules[moduleDoc.name].properties.push(property);
-                });
+                // The only thing under module is function so far, so
+                // don't need to merge anything else.
 
-                // The rest should be the same... TODO: verify.
             } else {
                 everything.modules[moduleDoc.name] = moduleDoc;
             }
