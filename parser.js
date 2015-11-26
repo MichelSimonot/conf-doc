@@ -1,18 +1,7 @@
-'use strict';
 var TAG_LIST = require('./configurations/default/definedTags.js');
 
-var parser = (function() {
+var newparser = (function() {
     var exports = {};
-
-    /**
-     * TODO:
-     * 	- Multi-line tag support.
-     * 	- Configurify everything.
-     * 	- Error support.
-     * 	- Read file line by line.
-     * 		- For line number.
-     * 		- Easier multi-line tags.
-     */
 
     /**
      * Parses a file from a String into a documentation object.
@@ -23,33 +12,23 @@ var parser = (function() {
     exports.parseFile = function(file) {
 
         /**
-         * Container object for all resulting file documentation objects.
-         * @name everything
-         * @type {Object}
+         * TODO:
+         * 	- Multi-line tag support.
+         * 	- Configurify everything.
+         * 	- Error support.
+         * 	- Read file line by line?
+         * 		- For line number.
+         * 		- Easier multi-line tags.
          */
-        var everything = {
-            functions: [],
-            properties: []
-        };
 
-        // Get the comment blocks.
-        var codeBlocks = findBlocks(file);
-
-        // Parse each comment block and add it to everything container.
-        codeBlocks.forEach(function(block) {
-            var block = parseBlock(block);
-            //console.log('Block: ' + JSON.stringify(block));
-            switch(block.itemType) {
-                case 'function':
-                    everything.functions.push(block);
-                    break;
-                case 'module':
-                    everything.name = block.name;
-                    break;
-            };
+        var textBlocks = findBlocks(file);
+        var objectBlocks = [];
+        textBlocks.forEach(function(textBlock) {
+            objectBlocks.push(convertToObject(textBlock));
         });
 
-        return everything;
+        // We are assembling objects into modules here.
+        return assembleObjects(objectBlocks, ['module']);
     }
 
     /**
@@ -59,6 +38,7 @@ var parser = (function() {
      */
     function findBlocks(file) {
 
+        // TODO: Make better.
         var start = "\/\*\*";
         var end = "\*\/";
 
@@ -68,43 +48,77 @@ var parser = (function() {
         return blocks;
     };
 
-    function readFile(filePath) {
-        var file = fs.open(filePath, 'r');
-    }
-
     /**
-     * Converts a text comment block into an object comment block.
-     * @param  {String} block Comment block.
-     * @return {Object} Comment block as a JSON object.
+     * Converts a block of text into a single object.
+     * @param  {String} textBlock Documentation text block.
+     * @return {Object} Documentation object.
      */
-    function parseBlock(block) {
-        var lines = splitBlock(block);
-        var lineObjs = [];
+    function convertToObject(textBlock) {
+        var textLines = splitTextBlock(textBlock);
 
-        lines.forEach(function(line) {
-            line = line.trim();
+        var blockObjects = [];
+        textLines.forEach(function(textLine) {
+            textLine = textLine.trim();
+            var words = textLine.split(' ');
 
-            // Split the line into individual words.
-            var components = line.split(" ");
-            // If there's only one word (a *), then the line is blank.
-            if(components.length === 1) {
-                // Empty line.
+            // The tag word starts with an @
+            if(!words[1] || words[1].indexOf('@') !== 0) {
+                // Error; not a tag.
+                // return null; //WORD_NOT_A_TAG
                 return;
             }
 
-            // Find if the tag type is defined.
-            var tagType = findTag(components[1]);
-            if(tagType) {
-                // If defined, add the parsed line to a temporary object.
-                lineObjs.push(parseLine(components, tagType));
+            var tagType = words[1].substring(1);
+            var tagFunction = TAG_LIST[tagType];
+
+            // A parsing function should have been defined.
+            if(!isFunction(tagFunction)) {
+                // Error; no tag line parser found.
+                // return null; //NO_TAG_PARSER
+                console.log('adadad');
+                return;
+            }
+
+            // TODO: Remove tagType
+            blockObjects.push(tagFunction(words, tagType));
+        });
+
+        // We are parsing text into module and function objects here.
+        var containers = ['module', 'function'];
+        return assembleObjects(blockObjects, containers)
+    }
+
+    /**
+     * Assembles an array of objects into a single object.
+     * @param  {Object} objects  Objects being assembled together.
+     * @param  {Array} containers Array of strings indicating which tag types are the main containers.
+     * @return {Object} assembled The assembled object.
+     */
+    function assembleObjects(objects, containers) {
+        var assembled = {};
+        var hasMain = false;
+
+        objects.forEach(function(item) {
+            if(containers.indexOf(item.type) > -1 && !hasMain) {
+                // If this item is a container,
+                assembled.type = item.type;
+                assembled.name = item.name;
+                hasMain = true;
+            } else if(containers.indexOf(item.type) > -1 && hasMain) {
+                // If there was already a container item, ignore this one.
+                return; // Error; two containers present.
             } else {
-                // Error; not a tag.
-                return; //COMPONENT_NOT_A_TAG returned from findTag
+                // Otherwise, put the item in the container.
+                assembled[item.type] = assembled[item.type] || [];
+                assembled[item.type].push(item);
             }
         });
 
-        // Format all the line documentation objects into a single block documentation object.
-        return formatBlock(lineObjs);
+        if(!hasMain) {
+            // Error; no main tag type.
+        }
+
+        return assembled;
     }
 
     /**
@@ -112,98 +126,20 @@ var parser = (function() {
      * @param  {String} block Comment block.
      * @return {Array} Comment lines.
      */
-    function splitBlock(block) {
-        return block.split("\n");
+    function splitTextBlock(textBlock) {
+        return textBlock.split('\n');
     }
 
     /**
-     * Returns the tag name if defined, otherwise TODO
-     * @param  {String} tagComponent Documentation component.
-     * @return {String} Tag name.
+     * Utility function to check whether an object is a function.
+     * @param  {Something} object Object being checked.
+     * @return {Boolean} isFunction Result of the check.
      */
-    function findTag(tagComponent) {
-        //TODO: Multi-line tag support.
-        //Assumes every line is a separate tag.
-        //TODO: Do I need this part? Yes, for the different type of error.
-        // A tag component starts with an @
-        if(tagComponent.indexOf('@') !== 0) {
-            // Error; not a tag.
-            return null; //COMPONENT_NOT_A_TAG
-        }
-
-        tagComponent = tagComponent.substring(1);
-
-        // Checks if the tag type is in the tag list.
-        if(typeof TAG_LIST[tagComponent] !== 'undefined') {
-            return tagComponent;
-        } else {
-            return null; //TAG_NOT_DEFINED
-        }
+    function isFunction(object) {
+        return typeof object === 'function';
     }
 
-    /**
-     * Invokes the parsing function specific to the tag type of the line.
-     * @param  {Array} components The split (by words) comment line.
-     * @param  {String} tagType Name of a defined tag.
-     * @return {Object} The comment line as an object.
-     */
-    function parseLine(components, tagType) {
-        // Get then call the function for the tag.
-        var tagFunction = TAG_LIST[tagType];
-        var output = tagFunction(components, tagType);
-        return output;
-    }
-
-    /**
-     * Converts the comment line objects into a single comment block object.
-     * @param  {Array} lineObjs Comment line objects.
-     * @return {Object} Comment block object.
-     */
-    function formatBlock(lineObjs) {
-        /**
-         * Container object for all resulting block documentation items.
-         * @name obj
-         * @type {Object}
-         */
-        var obj = {
-            params: []
-        };
-
-        // Merge each line object into the block object.
-        for(var i = 0; i < lineObjs.length; i++) {
-            var item = lineObjs[i];
-
-            switch(item.tagType) {
-                //TODO: Don't have this "top-level", to be more consistent with return?
-                case 'function':
-                    obj.itemType = item.tagType;
-                    obj.name = item.name;
-                    break;
-                case 'param':
-                    obj.params.push({
-                        type: item.type,
-                        name: item.name,
-                        desc: item.desc
-                    });
-                    break;
-                case 'return':
-                    obj.return = {
-                        type: item.type,
-                        name: item.name,
-                        desc: item.desc
-                    };
-                    break;
-                case 'module':
-                    obj.itemType = item.tagType;
-                    obj.name = item.name;
-                    break;
-            }
-        }
-        return obj;
-    }
-
-    //TODO: Export everything for overrideability (?).
     return exports;
 })();
 
-module.exports = parser;
+module.exports = newparser;
