@@ -13,12 +13,10 @@ var newparser = (function() {
 
         /**
          * TODO:
-         * 	- Multi-line tag support.
          * 	- Configurify everything.
          * 	- Error support.
          * 	- Read file line by line?
          * 		- For line number.
-         * 		- Easier multi-line tags.
          */
 
         var textBlocks = findBlocks(file);
