@@ -29,52 +29,52 @@ var definedTags = (function() {
         /**
          * Method tag parser.
          * @param  {Array} words Documentation line, split on spaces.
-         * @expects words  ['*', '@method', 'functionName']
+         * @expects words  [@method', 'functionName']
          * @return {docob} docob Docob (real descriptive, I know, TODO).
          */
         'method': function(words) {
             var tagType = 'function';
-            var name = words[2];
+            var name = words[1];
             return new docob(tagType, name);
         },
         /**
          * Module tag parser.
          * @param  {Array} words Documentation line, split on spaces.
-         * @expects words  ['*', '@module', 'moduleName']
+         * @expects words  [@module', 'moduleName']
          * @return {docob} docob Docob (real descriptive, I know, TODO).
          */
         'module': function(words) {
             var tagType = 'module';
-            var name = words[2];
+            var name = words[1];
             return new docob(tagType, name);
         },
         /**
          * Param tag parser.
          * @param  {Array} words Documentation line, split on spaces.
-         * @expects words  ['*', '@param', '{Type}', 'paramName', 'Description', 'goes', 'here', ...]
+         * @expects words  [@param', '{Type}', 'paramName', 'Description', 'goes', 'here', ...]
          * @return {docob} docob Docob (real descriptive, I know, TODO).
          */
         'param': function(words, tagType) {
             var tagType = 'param';
-            var name = words[3];
+            var name = words[2];
             var innards = {
-                type: words[2].substring(1, words[2].length - 1),
-                desc: words.splice(4).join(" ")
+                type: words[1].substring(1, words[1].length - 1),
+                desc: words.splice(3).join(" ")
             };
             return new docob(tagType, name, innards);
         },
         /**
          * Return tag parser.
          * @param  {Array} words Documentation line, split on spaces.
-         * @expects words  ['*', '@returns', '{Type}', 'returnName', 'Description', 'goes', 'here', ...]
+         * @expects words  [@returns', '{Type}', 'returnName', 'Description', 'goes', 'here', ...]
          * @return {docob} docob Docob (real descriptive, I know, TODO).
          */
         'returns': function(words) {
             var tagType = 'return';
-            var name = words[3];
+            var name = words[2];
             var innards = {
-                returnType: words[2].substring(1, words[2].length - 1),
-                desc: words.splice(4).join(" ")
+                returnType: words[1].substring(1, words[1].length - 1),
+                desc: words.splice(3).join(" ")
             };
             return new docob(tagType, name, innards);
         }

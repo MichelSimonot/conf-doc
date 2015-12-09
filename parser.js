@@ -24,6 +24,7 @@ var newparser = (function() {
         var textBlocks = findBlocks(file);
         var objectBlocks = [];
         textBlocks.forEach(function(textBlock) {
+            textBlock = removePrefixes(textBlock);
             objectBlocks.push(convertToObject(textBlock));
         });
 
@@ -49,6 +50,30 @@ var newparser = (function() {
     };
 
     /**
+     * Removes the line prefix from every line of a text block.
+     *
+     * @method removePrefixes
+     * @param  {String} textBlock Block of text to act on.
+     * @return {String} Block of text, without prefixes.
+     */
+    function removePrefixes(textBlock) {
+        var linePrefix = '*'; // TODO: Configurify prefix.
+        var textLines = splitTextBlock(textBlock);
+        // Loop over every line and remove the prefix if there is one.
+        for(var i = 0; i < textLines.length; i++) {
+            textLines[i] = textLines[i].trim();
+            if(textLines[i].indexOf(linePrefix) === 0) {
+                textLines[i] = textLines[i].substring(1).trim();
+            }
+        }
+        return joinTextLines(textLines);
+    }
+
+    function separateTags(textBlock) {
+        // TODO: This.
+    }
+
+    /**
      * Converts a block of text into a single object.
      * @param  {String} textBlock Documentation text block.
      * @return {Object} Documentation object.
@@ -62,13 +87,13 @@ var newparser = (function() {
             var words = textLine.split(' ');
 
             // The tag word starts with an @
-            if(!words[1] || words[1].indexOf('@') !== 0) {
+            if(!words[0] || words[0].indexOf('@') !== 0) {
                 // Error; not a tag.
                 // return null; //WORD_NOT_A_TAG
                 return;
             }
 
-            var tagType = words[1].substring(1);
+            var tagType = words[0].substring(1);
             var tagFunction = TAG_LIST[tagType];
 
             // A parsing function should have been defined.
@@ -128,6 +153,16 @@ var newparser = (function() {
      */
     function splitTextBlock(textBlock) {
         return textBlock.split('\n');
+    }
+
+    /**
+     * Utility function to join text lines into a text block.
+     * Meant as an inverse function to splitTextBlock.
+     * @param  {Array} textLines Array of strings to join.
+     * @return {String} Text block.
+     */
+    function joinTextLines(textLines) {
+        return textLines.join('\n');
     }
 
     /**
