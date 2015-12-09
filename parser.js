@@ -24,7 +24,6 @@ var newparser = (function() {
         var textBlocks = findBlocks(file);
         var objectBlocks = [];
         textBlocks.forEach(function(textBlock) {
-            textBlock = removePrefixes(textBlock);
             objectBlocks.push(convertToObject(textBlock));
         });
 
@@ -57,20 +56,68 @@ var newparser = (function() {
      * @return {String} Block of text, without prefixes.
      */
     function removePrefixes(textBlock) {
-        var linePrefix = '*'; // TODO: Configurify prefix.
+        var linePrefix = '*'; // TODO: Configurify.
+        var commentStarter = '/**'; // TODO: Configurify.
+        var commentEnder = '*/'; // TODO: Configurify.
+        // All the prefixes we want removed.
+        var removeMes = [
+            commentStarter,
+            commentEnder,
+            linePrefix
+        ];
+
         var textLines = splitTextBlock(textBlock);
         // Loop over every line and remove the prefix if there is one.
         for(var i = 0; i < textLines.length; i++) {
             textLines[i] = textLines[i].trim();
-            if(textLines[i].indexOf(linePrefix) === 0) {
-                textLines[i] = textLines[i].substring(1).trim();
+
+            // Removes all removeMes in all lines.
+            for(var j = 0; j < removeMes.length; j++) {
+                if(textLines[i].indexOf(removeMes[j]) === 0) {
+                    textLines[i] = (textLines[i].substring(removeMes[j].length)).trim();
+                }
             }
         }
+
+        // TODO: Filter out empty textLines here.
+        //      Instead of trimming in splitIntoTags,
+        //      when multi-line tags are merged.
+
         return joinTextLines(textLines);
     }
 
-    function separateTags(textBlock) {
-        // TODO: This.
+    /**
+     * Splits a block of text into the tags it is composed of.
+     * @method splitIntoTags
+     * @param  {String} textBlock Block of text.
+     * @return {Array} Array of tags, in string format.
+     */
+    function splitIntoTags(textBlock) {
+        var tagSymbol = '@'; // TODO: Configurify.
+        var tags = [];
+
+        // TODO: Only merge multi-lines for tags
+        //      that want them merged.
+        //      Ex: @desc, not @example.
+        //      Default to merge.
+
+        var textLines = splitTextBlock(textBlock);
+
+        // TODO: Make this better.
+        var currentTag = '';
+        for(var i = 0; i < textLines.length; i++) {
+            // If the lines starts a new tag..
+            if(textLines[i].indexOf(tagSymbol) === 0) {
+                tags.push(currentTag.trim());
+                currentTag = textLines[i];
+            } else {
+                currentTag += ' ' + textLines[i];
+            }
+        }
+        // Make sure the last tag gets added in.
+        tags.push(currentTag.trim());
+
+        return tags;
     }
 
     /**
@@ -79,12 +126,15 @@ var newparser = (function() {
      * @return {Object} Documentation object.
      */
     function convertToObject(textBlock) {
-        var textLines = splitTextBlock(textBlock);
+        // Remove unneeded prefixes from the block.
+        textBlock = removePrefixes(textBlock);
+        // Split the block into tags.
+        var textTags = splitIntoTags(textBlock);
 
         var blockObjects = [];
-        textLines.forEach(function(textLine) {
-            textLine = textLine.trim();
-            var words = textLine.split(' ');
+        textTags.forEach(function(textTag) {
+            textTag = textTag.trim();
+            var words = textTag.split(' ');
 
             // The tag word starts with an @
             if(!words[0] || words[0].indexOf('@') !== 0) {
