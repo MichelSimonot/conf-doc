@@ -29,7 +29,7 @@ var definedTags = (function() {
         /**
          * Method tag parser.
          * @param  {Array} words Documentation line, split on spaces.
-         * @expects words  [@method', 'functionName']
+         * @expects words  ['@method', 'functionName']
          * @return {docob} docob Docob (real descriptive, I know, TODO).
          */
         'method': function(words) {
@@ -40,7 +40,7 @@ var definedTags = (function() {
         /**
          * Module tag parser.
          * @param  {Array} words Documentation line, split on spaces.
-         * @expects words  [@module', 'moduleName']
+         * @expects words  ['@module', 'moduleName']
          * @return {docob} docob Docob (real descriptive, I know, TODO).
          */
         'module': function(words) {
@@ -51,7 +51,7 @@ var definedTags = (function() {
         /**
          * Param tag parser.
          * @param  {Array} words Documentation line, split on spaces.
-         * @expects words  [@param', '{Type}', 'paramName', 'Description', 'goes', 'here', ...]
+         * @expects words  ['@param', '{Type}', 'paramName', 'Description', 'goes', 'here', ...]
          * @return {docob} docob Docob (real descriptive, I know, TODO).
          */
         'param': function(words, tagType) {
@@ -66,7 +66,7 @@ var definedTags = (function() {
         /**
          * Return tag parser.
          * @param  {Array} words Documentation line, split on spaces.
-         * @expects words  [@returns', '{Type}', 'returnName', 'Description', 'goes', 'here', ...]
+         * @expects words  ['@returns', '{Type}', 'returnName', 'Description', 'goes', 'here', ...]
          * @return {docob} docob Docob (real descriptive, I know, TODO).
          */
         'returns': function(words) {
