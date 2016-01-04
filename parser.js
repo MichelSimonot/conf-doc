@@ -134,10 +134,10 @@ var newparser = (function() {
             textTag = textTag.trim();
             var words = textTag.split(' ');
 
-            // The tag word starts with an @
-            if(!words[0] || words[0].indexOf('@') !== 0) {
-                // Error; not a tag.
-                // return null; //WORD_NOT_A_TAG
+            // Is this tag text a tagless description?
+            if(words[0].indexOf('@') !== 0) {
+                // TODO: Should desc be hardcoded? No..
+                blockObjects.push(TAG_LIST['desc'](words, 'desc'));
                 return;
             }
 

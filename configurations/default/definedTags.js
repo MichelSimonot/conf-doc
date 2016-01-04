@@ -27,6 +27,26 @@ var definedTags = (function() {
         // TODO: turn the complicated/common ones into separate functions.
 
         /**
+         * Desc tag parser.
+         * @param  {Array} words Documentation line, split on spaces.
+         * @return {docob} docob Docob (real descriptive, I know, TODO).
+         */
+        'desc': function(words) {
+            // Determine between a tagless and a tagged desc.
+            var descString;
+            if(words[0].indexOf('@desc') === 0) {
+                descString = words.splice(1).join(' ');
+            } else {
+                descString = words.join(' ');
+            }
+
+            var tagType = 'desc';
+            var innards = {
+                desc: descString
+            };
+            return new docob(tagType, "", innards);
+        },
+        /**
          * Method tag parser.
          * @param  {Array} words Documentation line, split on spaces.
          * @expects words  ['@method', 'functionName']
