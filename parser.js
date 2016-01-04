@@ -1,4 +1,6 @@
-var TAG_LIST = require('./configurations/default/definedTags.js');
+var tagConfigs = require('./configurations/default/definedTags.js');
+var TAG_LIST = tagConfigs.definedTags;
+var descTag = tagConfigs.descTag;
 
 var newparser = (function() {
     var exports = {};
@@ -36,7 +38,7 @@ var newparser = (function() {
      */
     function findBlocks(file) {
 
-        // TODO: Configury.
+        // TODO: Configurify.
         var start = "\/\*\*";
         var end = "\*\/";
 
@@ -136,20 +138,23 @@ var newparser = (function() {
             textTag = textTag.trim();
             var words = textTag.split(' ');
 
+            var tagType;
             // Is this tag text a tagless description?
             if(words[0].indexOf('@') !== 0) {
-                // TODO: Should desc be hardcoded? No..
-                blockObjects.push(TAG_LIST['desc'](words));
-                return;
+                tagType = descTag;
+            } else {
+                // Else, if it's a normal tag.
+                tagType = words[0].substring(1);
             }
 
-            var tagType = words[0].substring(1);
             var tagFunction = TAG_LIST[tagType];
-
             // A parsing function should have been defined.
             if(!isFunction(tagFunction)) {
                 // Error; no tag line parser found.
                 // return null; //NO_TAG_PARSER
+                // or
+                // Error/Warning; no descTag defined/exported from definedTags.js.
+                // return null; //NO_DESC_PARSER
                 console.log('adadad');
                 return;
             }

@@ -23,6 +23,7 @@ var definedTags = (function() {
         this.props = props;
     }
 
+    exports.descTag = 'desc';
     exports.definedTags = {
         // TODO: turn the complicated/common ones into separate functions.
 
@@ -100,7 +101,7 @@ var definedTags = (function() {
         }
     }
 
-    return exports.definedTags;
+    return exports;
 })();
 
 module.exports = definedTags;
