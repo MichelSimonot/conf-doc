@@ -1,7 +1,6 @@
 'use strict';
 
 //TODO: Remove hardcoded numbers.
-//TODO: Change method to functions.
 /**
  * List of defined tag types, and their parsing functions. TODO.
  * @name TAG_LIST
@@ -48,12 +47,12 @@ var definedTags = (function() {
             return new docob(tagType, "", innards);
         },
         /**
-         * Method tag parser.
+         * Function tag parser.
          * @param  {Array} words Documentation line, split on spaces.
-         * @expects words  ['@method', 'functionName']
+         * @expects words  ['@function', 'functionName']
          * @return {docob} docob Docob (real descriptive, I know, TODO).
          */
-        'method': function(words) {
+        'function': function(words) {
             var tagType = 'function';
             var name = words[1];
             return new docob(tagType, name);

@@ -8,7 +8,7 @@
  * This is a test file with random stuff in it. By the
  * way, this is a multi-line tagless description.
  *
- * @method doStuff
+ * @function doStuff
  * @desc I wonder what happens when you have two descriptions. Oh,
  * it adds both of them to the desc array. Cool.
  * @returns {Integer} forty This return ststetaafaa. Yup.
@@ -24,7 +24,7 @@ function doStuff() {
  * More random stuff with other formatting.
  * This function takes parameters!
  *
- * @method anotherFunction
+ * @function anotherFunction
  * @param {Integer} param This parameter is an integer.
  * @returns {Integer} something This return statement returns an integer.
  */

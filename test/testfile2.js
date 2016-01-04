@@ -6,9 +6,9 @@
 
 
 /**
- * @method extraFunction
+ * @function extraFunction
  * @param {Boolean} amIExtra Yes little buddy, yes you are.
  */
 function extraFunction(amIExtra) {
-    
+
 }
