@@ -1,6 +1,5 @@
 'use strict';
 
-//TODO: Remove hardcoded numbers.
 /**
  * List of defined tag types, and their parsing functions. TODO.
  * @name TAG_LIST
@@ -29,6 +28,8 @@ var definedTags = (function() {
         /**
          * Desc tag parser.
          * @param  {Array} words Documentation line, split on spaces.
+         * @expects words ['@desc', 'Description', 'goes', 'here', ...]
+         * @expects words ['Description', 'goes', 'here', ...]
          * @return {docob} docob Docob (real descriptive, I know, TODO).
          */
         'desc': function(words) {
