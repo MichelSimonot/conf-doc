@@ -36,10 +36,12 @@ var newparser = (function() {
      */
     function findBlocks(file) {
 
-        // TODO: Make better.
+        // TODO: Configury.
         var start = "\/\*\*";
         var end = "\*\/";
 
+        // TODO: Figure out why this is invalid ("nothing to repeat").
+        //var blockRegex = new RegExp(start + '([\s\S]+?)' + end, 'g');
         var blockRegex = /\/\*{2}([\s\S]+?)\*\//g;
         var blocks = file.match(blockRegex);
 
