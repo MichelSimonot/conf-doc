@@ -137,7 +137,7 @@ var newparser = (function() {
             // Is this tag text a tagless description?
             if(words[0].indexOf('@') !== 0) {
                 // TODO: Should desc be hardcoded? No..
-                blockObjects.push(TAG_LIST['desc'](words, 'desc'));
+                blockObjects.push(TAG_LIST['desc'](words));
                 return;
             }
 
@@ -152,8 +152,7 @@ var newparser = (function() {
                 return;
             }
 
-            // TODO: Remove tagType
-            blockObjects.push(tagFunction(words, tagType));
+            blockObjects.push(tagFunction(words));
         });
 
         // We are parsing text into module and function objects here.
