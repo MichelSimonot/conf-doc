@@ -2,7 +2,7 @@
 
 /**
  * Does nothing.
- * @method iDoStuff
+ * @function iDoStuff
  */
 function iDoStuff() {
     // No you don't.
@@ -10,8 +10,9 @@ function iDoStuff() {
 
 /**
  * Something something documentation.
- * @method something
- * @param {Nothing} nothing Really, it's nothing.
+ * @function something
+ * @param {Nothing} nothing Really, it's nothing. Seriously,
+ * it returns so much nothing this is a multi-line tag line.
  */
 function something(nothing) {
 
